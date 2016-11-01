@@ -1,6 +1,8 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class nfa {
@@ -19,6 +21,10 @@ public class nfa {
 		}
 		
 		createNFA(fileScanner);
+		State.emptyMoves(nfaStartingState);
+		
+		
+		
 	}
 
 	/*
@@ -116,7 +122,32 @@ class State{
 	}
 	
 	public String toString(){
-		return name +": "+ transitions;
+		return ""+name +": "+ transitions;
+	}
+	
+	//returns states reachable with lambda 
+	public static ArrayList<State> emptyMoves(State state){
+		ArrayList<State> availStates = new ArrayList<State>();
+		availStates.add(state);
+		
+		StringTokenizer st = new StringTokenizer(state.transitions);
+		String tempLambda = "";
+		while(st.hasMoreTokens()){
+			tempLambda = st.nextToken();
+		}//we only care about the lambda transition in this method aka the last one in the string
+		
+		StringTokenizer st2 = new StringTokenizer(tempLambda,"{,}");
+		while(st2.hasMoreTokens()){
+			//these will be the states we can reach from this state via lambda
+			availStates.add(nfa.nfaStates.get(Integer.parseInt(st2.nextToken())));
+		}
+		
+//		for(int i =0;i<availStates.size();i++){
+//			System.out.println(availStates.get(i).name);
+//		}
+		
+		
+		return availStates;
 	}
 	
 }

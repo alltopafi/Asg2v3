@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 public class nfa {
 	static ArrayList<State> nfaStates = new ArrayList<State>();
 	static ArrayList<State> nfaAcceptingStates = new ArrayList<State>();
+	static char[] inputs;
 	static State nfaStartingState = null;
 	
 	public static void main(String[] args) {
@@ -21,8 +22,8 @@ public class nfa {
 		}
 		
 		createNFA(fileScanner);
-		State.emptyMoves(nfaStartingState);
-		
+
+		convertToDfa();
 		
 		
 	}
@@ -51,7 +52,7 @@ public class nfa {
 //					System.out.print(inputTokens.nextToken()+" ");
 //				}
 				
-				char[] inputs = new char[inputTokens.countTokens()+1];
+				inputs = new char[inputTokens.countTokens()+1];
 				for(int i =0;i<inputs.length-1;i++){
 					inputs[i] = inputTokens.nextToken().charAt(0);
 				}
@@ -105,6 +106,15 @@ public class nfa {
 				}
 	}
 	
+	public static void convertToDfa(){
+	
+		State.moveWithInput(nfaStartingState, 'a');
+		
+		
+		
+		
+	}
+	
 	
 }
 
@@ -145,10 +155,35 @@ class State{
 //		for(int i =0;i<availStates.size();i++){
 //			System.out.println(availStates.get(i).name);
 //		}
-		
-		
 		return availStates;
 	}
-	
+
+	//returns states reachable with a character
+	public static ArrayList<State> moveWithInput(State state, char input){
+		ArrayList<State> possibleMoves = new ArrayList<State>();
+		int inputCounter;
+		for(inputCounter = 0;inputCounter<nfa.inputs.length;inputCounter++){
+			if(nfa.inputs[inputCounter] == input)break;
+		}
+		StringTokenizer st = new StringTokenizer(state.transitions);
+		String temp = "";
+		int tempCounter = 0;
+		while(st.hasMoreTokens()){
+			if(tempCounter == inputCounter){
+				temp=st.nextToken();
+			}
+			st.nextToken();
+			tempCounter++;
+		}
+		//temp at this point holds the string list of the states we can reach with the given character
+		StringTokenizer st2 = new StringTokenizer(temp,"{,}");
+		while(st2.hasMoreTokens()){
+			possibleMoves.add(nfa.nfaStates.get(Integer.parseInt(st2.nextToken())));
+		}
+//		for(int i = 0;i<possibleMoves.size();i++){
+//			System.out.println(possibleMoves.get(i).name);
+//		}
+		return possibleMoves;
+	}
 }
 

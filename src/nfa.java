@@ -10,6 +10,7 @@ public class nfa {
 	static ArrayList<State> nfaAcceptingStates = new ArrayList<State>();
 	static char[] inputs;
 	static State nfaStartingState = null;
+	static State dfaStartingState = null;
 	
 	public static void main(String[] args) {
 
@@ -107,9 +108,14 @@ public class nfa {
 	}
 	
 	public static void convertToDfa(){
-	
-		State.moveWithInput(nfaStartingState, 'a');
+		System.out.print("\nTo DFA: ");		
 		
+		//The start state of the dfa will be the lamda transitions of the starting state in the nfa
+		ArrayList<State> dfaStartList = State.emptyMoves(nfaStartingState, new ArrayList<State>());
+//		System.out.println();
+//		for(int i =0;i<dfaStartList.size();i++){
+//			System.out.println(dfaStartList.get(i).name);
+//		}
 		
 		
 		
@@ -136,9 +142,9 @@ class State{
 	}
 	
 	//returns states reachable with lambda 
-	public static ArrayList<State> emptyMoves(State state){
-		ArrayList<State> availStates = new ArrayList<State>();
-		availStates.add(state);
+	public static ArrayList<State> emptyMoves(State state,ArrayList<State> list){
+		
+		list.add(state);
 		
 		StringTokenizer st = new StringTokenizer(state.transitions);
 		String tempLambda = "";
@@ -147,15 +153,27 @@ class State{
 		}//we only care about the lambda transition in this method aka the last one in the string
 		
 		StringTokenizer st2 = new StringTokenizer(tempLambda,"{,}");
+		int tempStateNum;
 		while(st2.hasMoreTokens()){
 			//these will be the states we can reach from this state via lambda
-			availStates.add(nfa.nfaStates.get(Integer.parseInt(st2.nextToken())));
+			tempStateNum = Integer.parseInt(st2.nextToken());
+			
+			if(!list.contains(nfa.nfaStates.get(tempStateNum))){
+				list.add(nfa.nfaStates.get(tempStateNum));
+				State.emptyMoves(nfa.nfaStates.get(tempStateNum), list);
+			}
+			
 		}
+	
+		Set<State> tempSet = new HashSet<State>();
+		tempSet.addAll(list);
+		list.clear();
+		list.addAll(tempSet);
 		
-//		for(int i =0;i<availStates.size();i++){
-//			System.out.println(availStates.get(i).name);
+//		for(int i =0;i<list.size();i++){
+//			System.out.println(list.get(i).name);
 //		}
-		return availStates;
+		return list;
 	}
 
 	//returns states reachable with a character

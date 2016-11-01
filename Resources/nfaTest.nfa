@@ -1,0 +1,9 @@
+3
+  	a  	b 	c 	d
+0: 	{0}	{0,1} {} {} {1,2}
+1:	{} {1} {1} {1} {}
+2:	{} {1,2} {1} {1} {}
+0
+{1,2}
+// Accept sentences without abc or with bcd;
+//  

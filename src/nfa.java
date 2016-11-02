@@ -176,41 +176,43 @@ public class nfa {
 				dfaStartingState.checked = true;
 //				System.out.println(dfaStartingState.map.get('b'));
 				//get where the starting node goes with an input if it is not in the states add it 
-				while(true){
+			
 					
 					for(int i=0;i<inputs.length-1;i++){
-						
+						dfaState tempState = null;
 						for(dfaState s : dfaStates){
 							if(s.map.get(inputs[i]) != null){
 								//there is a state that exists for this move
 								//add it to dfaStates if it is not in there
-								dfaState tempState = new dfaState(dfaStates.size());
+								tempState = new dfaState(dfaStates.size());
 								tempState.nfaStates.addAll(s.map.get(inputs[i]));
 								System.out.print(" "+s.map.get(inputs[i])+" ");
+								
 							}
-							
-							
+						}
+						dfaStates.add(tempState);
+						
+						
+						
+					}
+					System.out.println("\nSize of dfaStates: "+dfaStates.size());
+					
+				for(dfaState state : dfaStates){
+					for(int i =0;i<inputs.length-1;i++){
+						if(state.map.get(inputs[i]) == null){
+							//need to update this
 							
 							
 						}
 						
 						
-						
-						
 					}
-					break;
-					
-					
-					
 					
 					
 				}
-	
-		}
-		
-		
-		
-		
+				
+				
+		}	
 	}
 	
 	

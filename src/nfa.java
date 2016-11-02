@@ -138,7 +138,6 @@ public class nfa {
 		 * we repeat this any time a new state is made 
 		 */
 		
-				System.out.println();
 				Set<State> tempSet = new HashSet<State>();
 				//for each input
 				for(int i=0;i<inputs.length-1;i++){
@@ -174,7 +173,38 @@ public class nfa {
 					tempSet.clear();
 				}
 				
-				
+				dfaStartingState.checked = true;
+//				System.out.println(dfaStartingState.map.get('b'));
+				//get where the starting node goes with an input if it is not in the states add it 
+				while(true){
+					
+					for(int i=0;i<inputs.length-1;i++){
+						
+						for(dfaState s : dfaStates){
+							if(s.map.get(inputs[i]) != null){
+								//there is a state that exists for this move
+								//add it to dfaStates if it is not in there
+								dfaState tempState = new dfaState(dfaStates.size());
+								tempState.nfaStates.addAll(s.map.get(inputs[i]));
+								System.out.print(" "+s.map.get(inputs[i])+" ");
+							}
+							
+							
+							
+							
+						}
+						
+						
+						
+						
+					}
+					break;
+					
+					
+					
+					
+					
+				}
 	
 		}
 		
@@ -201,7 +231,7 @@ class State{
 	}
 	
 	public String toString(){
-		return ""+name +": "+ transitions;
+		return ""+name;// +": "+ transitions;
 	}
 	
 	//returns states reachable with lambda 
@@ -287,6 +317,8 @@ class dfaState {
 	int name;
 	ArrayList<State> nfaStates;
 	HashMap<Character, ArrayList<State>> map;
+	boolean checked = false;
+	
 	public dfaState(int name){
 		this.name = name;
 		nfaStates = new ArrayList<State>();

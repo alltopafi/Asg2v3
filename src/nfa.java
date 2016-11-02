@@ -138,44 +138,34 @@ public class nfa {
 		 */
 		
 				System.out.println();
-				
+				Set<State> tempSet = new HashSet<State>();
 				//for each input
 				for(int i=0;i<inputs.length-1;i++){
-					
+					ArrayList<State> moves = null;
+					ArrayList<State> emptyMove = null;
 					//apply move with character for each state included 
 					for(int j=0;j<dfaStartingState.nfaStates.size();j++){
-						System.out.println("----------------------");
-						System.out.println("move on state "+dfaStartingState.nfaStates.get(j).name+" with input "+inputs[i]);
-						ArrayList<State> moves = State.moveWithInput(dfaStartingState.nfaStates.get(j), inputs[i]);
-						
-							for(int k=0;k<moves.size();k++){
-								System.out.println(moves.get(k).name);
-							}
+						moves = State.moveWithInput(dfaStartingState.nfaStates.get(j), inputs[i]);
+	
 						
 						//apply lambda transitions to moves 
-						ArrayList<State> emptyMove = new ArrayList<State>();
+						emptyMove = new ArrayList<State>();
 						for(int k=0;k<moves.size();k++){
 							emptyMove.addAll(State.emptyMoves(moves.get(k)));
-							System.out.println("empty move on state "+moves.get(k).name);
-							
-							for(int l=0;l<emptyMove.size();l++){
-								System.out.println(emptyMove.get(l).name);
-								//seems that empty move is only returning the result with one empty transition
-							}
-							
 						}	
+						tempSet.addAll(moves);
+						tempSet.addAll(emptyMove);
+						moves.clear();
+						emptyMove.clear();
 						
-						
-						
-						
-						
+					}	
+					
+					
+					System.out.println("\nfor input "+inputs[i]);
+					for(State s: tempSet){
+						System.out.print(s.name);
 					}
-					
-					
-					
-					
-					
-					
+					tempSet.clear();
 				}
 				
 				

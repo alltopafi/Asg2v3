@@ -10,6 +10,8 @@ public class nfa {
 	static ArrayList<State> nfaAcceptingStates = new ArrayList<State>();
 	static char[] inputs;
 	static State nfaStartingState = null;
+	
+	static ArrayList<State> dfaStates = new ArrayList<State>();
 	static State dfaStartingState = null;
 	
 	public static void main(String[] args) {
@@ -108,16 +110,62 @@ public class nfa {
 	}
 	
 	public static void convertToDfa(){
+		
+		
 		System.out.print("\nTo DFA: ");		
 		
 		//The start state of the dfa will be the lamda transitions of the starting state in the nfa
 		ArrayList<State> dfaStartList = State.emptyMoves(nfaStartingState, new ArrayList<State>());
-//		System.out.println();
-//		for(int i =0;i<dfaStartList.size();i++){
-//			System.out.println(dfaStartList.get(i).name);
-//		}
+		
+		for(int i =0;i<dfaStartList.size();i++){
+			if(i==0)System.out.print("{");
+			System.out.print(dfaStartList.get(i).name);
+			if(i==dfaStartList.size()-1){
+				System.out.print("} ");
+			}else{
+				System.out.print(",");
+			}
+		}
+		
+		dfaStates.add(new State(0));
 		
 		
+		
+		/* the next 2 steps we will do for all new states added to the list
+		 * for each possible input symbol
+		 * 1. apply move with character for each state included..this will return a set 
+		 * 2. apply lambda transitions to these states possibly resulting in a new set 
+		 * this final set of states will be a dfa state.
+		 * 
+		 * we repeat this any time a new state is made 
+		 */
+		
+		ArrayList<State> tempList = new ArrayList<State>();
+		for(int i=0;i<inputs.length-1;i++){ //for each input
+			for(int k=0;k<dfaStartList.size();k++){
+				tempList.addAll(State.moveWithInput(dfaStartList.get(k), inputs[i]));//rule 1 above
+			}
+		}
+		Set<State> tempSet = new HashSet<State>();
+		for(int i =0;i<tempList.size();i++){
+			ArrayList<State> temp = State.emptyMoves(tempList.get(i), nfaStates);
+			tempSet.addAll(temp);
+		}
+		
+		tempSet.addAll(tempList);
+		tempList.clear();
+		tempList.addAll(tempSet);
+		tempSet.clear();
+		
+		for(int i=0;i<tempList.size();i++){
+			if(i==0)System.out.print("{");
+			System.out.print(tempList.get(i).name);
+			if(i==tempList.size()-1){
+				System.out.print("} ");
+			}else{
+				System.out.print(",");
+			}
+		}
 		
 	}
 	
@@ -127,6 +175,7 @@ public class nfa {
 class State{
 	int name;
 	String transitions;
+	boolean marked = false;
 	
 	public State(int name){
 		this.name = name;

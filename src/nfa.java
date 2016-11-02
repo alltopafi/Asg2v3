@@ -94,7 +94,6 @@ public class nfa {
 				StringTokenizer acceptST = new StringTokenizer(fileScanner.nextLine(),"{,}");
 				while(acceptST.hasMoreTokens()){
 					nfaAcceptingStates.add(nfaStates.get(Integer.parseInt(acceptST.nextToken())));
-					System.out.println("adding");
 				}
 				System.out.println("------");
 				System.out.println("s: "+nfaStartingState.name);
@@ -140,32 +139,50 @@ public class nfa {
 		 * we repeat this any time a new state is made 
 		 */
 		
-		ArrayList<State> tempList = new ArrayList<State>();
-		for(int i=0;i<inputs.length-1;i++){ //for each input
-			for(int k=0;k<dfaStartList.size();k++){
-				tempList.addAll(State.moveWithInput(dfaStartList.get(k), inputs[i]));//rule 1 above
-			}
-		}
+		boolean escape = false;
+		ArrayList<State> composedStates = dfaStartList;//new ArrayList<State>();
 		Set<State> tempSet = new HashSet<State>();
-		for(int i =0;i<tempList.size();i++){
-			ArrayList<State> temp = State.emptyMoves(tempList.get(i), nfaStates);
-			tempSet.addAll(temp);
-		}
 		
-		tempSet.addAll(tempList);
-		tempList.clear();
-		tempList.addAll(tempSet);
-		tempSet.clear();
-		
-		for(int i=0;i<tempList.size();i++){
-			if(i==0)System.out.print("{");
-			System.out.print(tempList.get(i).name);
-			if(i==tempList.size()-1){
-				System.out.print("} ");
-			}else{
-				System.out.print(",");
+		while(!escape){
+			System.out.println();
+			//for each input symbol
+			for(int i=0;i<inputs.length-1;i++){ 
+				//rule 1
+				for(int k=0;k<composedStates.size();k++){
+//					System.out.println(composedStates.get(k).name +" with input "+inputs[i]);
+					ArrayList<State> temp = State.moveWithInput(composedStates.get(k), inputs[i]);
+					tempSet.addAll(temp);
+					
+//					for(int z=0;z<temp.size();z++){
+//						System.out.println(temp.get(z).name);
+//					}
+				}
+				//rule 2
+				for(int k=0;k<composedStates.size();k++){
+					ArrayList<State> temp =State.emptyMoves(composedStates.get(k), nfaStates);
+					tempSet.addAll(temp);
+				}
+				
+				tempSet.addAll(composedStates);
+//				System.out.println("\nthis is for input "+inputs[i]);
+//				
+//				for(State s : tempSet){
+//					System.out.println(s.name);
+//				}
+				
+				tempSet.clear();
+				
+				
+				
+				
+				
 			}
+			
+			escape=true;
 		}
+		
+		
+		
 		
 	}
 	
@@ -192,7 +209,7 @@ class State{
 	
 	//returns states reachable with lambda 
 	public static ArrayList<State> emptyMoves(State state,ArrayList<State> list){
-		
+		System.out.println("\nempty moves called with state "+state.name);
 		list.add(state);
 		
 		StringTokenizer st = new StringTokenizer(state.transitions);
@@ -219,6 +236,10 @@ class State{
 		list.clear();
 		list.addAll(tempSet);
 		
+		System.out.println();
+		for(int i=0;i<nfa.nfaStates.size();i++){
+			System.out.println(nfa.nfaStates.get(i));
+		}
 //		for(int i =0;i<list.size();i++){
 //			System.out.println(list.get(i).name);
 //		}
@@ -227,6 +248,8 @@ class State{
 
 	//returns states reachable with a character
 	public static ArrayList<State> moveWithInput(State state, char input){
+		System.out.println("\nmove called with state "+state.name +" and with input "+input);
+		
 		ArrayList<State> possibleMoves = new ArrayList<State>();
 		int inputCounter;
 		for(inputCounter = 0;inputCounter<nfa.inputs.length;inputCounter++){
@@ -243,13 +266,21 @@ class State{
 			tempCounter++;
 		}
 		//temp at this point holds the string list of the states we can reach with the given character
+		System.out.print(temp);
 		StringTokenizer st2 = new StringTokenizer(temp,"{,}");
 		while(st2.hasMoreTokens()){
-			possibleMoves.add(nfa.nfaStates.get(Integer.parseInt(st2.nextToken())));
+			int tempInt = Integer.parseInt(st2.nextToken());
+			possibleMoves.add(nfa.nfaStates.get(tempInt));
+			System.out.println();
+			for(int i=0;i<nfa.nfaStates.size();i++){
+				System.out.println(nfa.nfaStates.get(i));
+			}
 		}
-//		for(int i = 0;i<possibleMoves.size();i++){
-//			System.out.println(possibleMoves.get(i).name);
-//		}
+		
+		System.out.println("possible moves");
+		for(int i = 0;i<possibleMoves.size();i++){
+			System.out.println(possibleMoves.get(i).name);
+		}
 		return possibleMoves;
 	}
 }

@@ -5,14 +5,15 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+
 public class nfa {
 	static ArrayList<State> nfaStates = new ArrayList<State>();
 	static ArrayList<State> nfaAcceptingStates = new ArrayList<State>();
 	static char[] inputs;
 	static State nfaStartingState = null;
 	
-	static ArrayList<State> dfaStates = new ArrayList<State>();
-	static State dfaStartingState = null;
+	static Set<dfaState> dfaStates = new HashSet<dfaState>();
+	static dfaState dfaStartingState = null;
 	
 	public static void main(String[] args) {
 
@@ -114,19 +115,16 @@ public class nfa {
 		System.out.print("\nTo DFA: ");		
 		
 		//The start state of the dfa will be the lamda transitions of the starting state in the nfa
-		ArrayList<State> dfaStartList = State.emptyMoves(nfaStartingState, new ArrayList<State>());
+		dfaStartingState = new dfaState(0);
 		
-		for(int i =0;i<dfaStartList.size();i++){
-			if(i==0)System.out.print("{");
-			System.out.print(dfaStartList.get(i).name);
-			if(i==dfaStartList.size()-1){
-				System.out.print("} ");
-			}else{
-				System.out.print(",");
-			}
+		dfaStartingState.nfaStates.addAll(State.emptyMoves(nfaStartingState));
+		dfaStates.add(dfaStartingState);
+		
+		for(int i =0;i<dfaStartingState.nfaStates.size();i++){
+			System.out.print(dfaStartingState.nfaStates.get(i).name);
+			if(i!=dfaStartingState.nfaStates.size()-1)System.out.print(",");
 		}
 		
-		dfaStates.add(new State(0));
 		
 		
 		
@@ -139,46 +137,49 @@ public class nfa {
 		 * we repeat this any time a new state is made 
 		 */
 		
-		boolean escape = false;
-		ArrayList<State> composedStates = dfaStartList;//new ArrayList<State>();
-		Set<State> tempSet = new HashSet<State>();
-		
-		while(!escape){
-			System.out.println();
-			//for each input symbol
-			for(int i=0;i<inputs.length-1;i++){ 
-				//rule 1
-				for(int k=0;k<composedStates.size();k++){
-//					System.out.println(composedStates.get(k).name +" with input "+inputs[i]);
-					ArrayList<State> temp = State.moveWithInput(composedStates.get(k), inputs[i]);
-					tempSet.addAll(temp);
+				System.out.println();
+				
+				//for each input
+				for(int i=0;i<inputs.length-1;i++){
 					
-//					for(int z=0;z<temp.size();z++){
-//						System.out.println(temp.get(z).name);
-//					}
+					//apply move with character for each state included 
+					for(int j=0;j<dfaStartingState.nfaStates.size();j++){
+						System.out.println("----------------------");
+						System.out.println("move on state "+dfaStartingState.nfaStates.get(j).name+" with input "+inputs[i]);
+						ArrayList<State> moves = State.moveWithInput(dfaStartingState.nfaStates.get(j), inputs[i]);
+						
+							for(int k=0;k<moves.size();k++){
+								System.out.println(moves.get(k).name);
+							}
+						
+						//apply lambda transitions to moves 
+						ArrayList<State> emptyMove = new ArrayList<State>();
+						for(int k=0;k<moves.size();k++){
+							emptyMove.addAll(State.emptyMoves(moves.get(k)));
+							System.out.println("empty move on state "+moves.get(k).name);
+							
+							for(int l=0;l<emptyMove.size();l++){
+								System.out.println(emptyMove.get(l).name);
+								//seems that empty move is only returning the result with one empty transition
+							}
+							
+						}	
+						
+						
+						
+						
+						
+					}
+					
+					
+					
+					
+					
+					
 				}
-				//rule 2
-				for(int k=0;k<composedStates.size();k++){
-					ArrayList<State> temp =State.emptyMoves(composedStates.get(k), nfaStates);
-					tempSet.addAll(temp);
-				}
-				
-				tempSet.addAll(composedStates);
-//				System.out.println("\nthis is for input "+inputs[i]);
-//				
-//				for(State s : tempSet){
-//					System.out.println(s.name);
-//				}
-				
-				tempSet.clear();
 				
 				
-				
-				
-				
-			}
-			
-			escape=true;
+	
 		}
 		
 		
@@ -187,7 +188,7 @@ public class nfa {
 	}
 	
 	
-}
+
 
 class State{
 	int name;
@@ -208,8 +209,9 @@ class State{
 	}
 	
 	//returns states reachable with lambda 
-	public static ArrayList<State> emptyMoves(State state,ArrayList<State> list){
-		System.out.println("\nempty moves called with state "+state.name);
+	public static ArrayList<State> emptyMoves(State state){
+		ArrayList<State> list = new ArrayList<State>();
+//		System.out.println("\nempty moves called with state "+state.name);
 		list.add(state);
 		
 		StringTokenizer st = new StringTokenizer(state.transitions);
@@ -223,23 +225,22 @@ class State{
 		while(st2.hasMoreTokens()){
 			//these will be the states we can reach from this state via lambda
 			tempStateNum = Integer.parseInt(st2.nextToken());
+//			System.out.println("temp number is "+tempStateNum);
 			
-			if(!list.contains(nfa.nfaStates.get(tempStateNum))){
 				list.add(nfa.nfaStates.get(tempStateNum));
-				State.emptyMoves(nfa.nfaStates.get(tempStateNum), list);
-			}
+				list.addAll(State.emptyMoves(nfa.nfaStates.get(tempStateNum)));
+			
 			
 		}
-	
 		Set<State> tempSet = new HashSet<State>();
 		tempSet.addAll(list);
 		list.clear();
 		list.addAll(tempSet);
 		
-		System.out.println();
-		for(int i=0;i<nfa.nfaStates.size();i++){
-			System.out.println(nfa.nfaStates.get(i));
-		}
+//		System.out.println();
+//		for(int i=0;i<nfa.nfaStates.size();i++){
+//			System.out.println(nfa.nfaStates.get(i));
+//		}
 //		for(int i =0;i<list.size();i++){
 //			System.out.println(list.get(i).name);
 //		}
@@ -248,7 +249,7 @@ class State{
 
 	//returns states reachable with a character
 	public static ArrayList<State> moveWithInput(State state, char input){
-		System.out.println("\nmove called with state "+state.name +" and with input "+input);
+//		System.out.println("\nmove called with state "+state.name +" and with input "+input);
 		
 		ArrayList<State> possibleMoves = new ArrayList<State>();
 		int inputCounter;
@@ -266,22 +267,33 @@ class State{
 			tempCounter++;
 		}
 		//temp at this point holds the string list of the states we can reach with the given character
-		System.out.print(temp);
+//		System.out.print(temp);
 		StringTokenizer st2 = new StringTokenizer(temp,"{,}");
 		while(st2.hasMoreTokens()){
 			int tempInt = Integer.parseInt(st2.nextToken());
 			possibleMoves.add(nfa.nfaStates.get(tempInt));
-			System.out.println();
-			for(int i=0;i<nfa.nfaStates.size();i++){
-				System.out.println(nfa.nfaStates.get(i));
-			}
+//			System.out.println();
+//			for(int i=0;i<nfa.nfaStates.size();i++){
+//				System.out.println(nfa.nfaStates.get(i));
+//			}
 		}
 		
-		System.out.println("possible moves");
-		for(int i = 0;i<possibleMoves.size();i++){
-			System.out.println(possibleMoves.get(i).name);
-		}
+//		System.out.println("possible moves");
+//		for(int i = 0;i<possibleMoves.size();i++){
+//			System.out.println(possibleMoves.get(i).name);
+//		}
 		return possibleMoves;
+	}
+	
+}
+
+class dfaState {
+	int name;
+	ArrayList<State> nfaStates;
+	
+	public dfaState(int name){
+		this.name = name;
+		nfaStates = new ArrayList<State>();
 	}
 }
 

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
@@ -161,10 +162,15 @@ public class nfa {
 					}	
 					
 					
-					System.out.println("\nfor input "+inputs[i]);
-					for(State s: tempSet){
-						System.out.print(s.name);
-					}
+					//this will be a node (which dfaStartingNode points to with given input
+					//should we implement a hashmap here?
+					ArrayList<State> tempPut = new ArrayList<State>();
+					tempPut.addAll(tempSet);
+					
+					
+					dfaStartingState.map.put(inputs[i], tempPut);
+					
+					
 					tempSet.clear();
 				}
 				
@@ -280,10 +286,11 @@ class State{
 class dfaState {
 	int name;
 	ArrayList<State> nfaStates;
-	
+	HashMap<Character, ArrayList<State>> map;
 	public dfaState(int name){
 		this.name = name;
 		nfaStates = new ArrayList<State>();
+		map = new HashMap<Character, ArrayList<State>>();
 	}
 }
 

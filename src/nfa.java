@@ -368,7 +368,7 @@ class State{
 	}
 	
 	public String toString(){
-		return ""+name;// +": "+ transitions;
+		return ""+name +": "+ transitions;
 	}
 	
 	//returns states reachable with lambda 

@@ -332,7 +332,6 @@ public static boolean dfaStatesFinsished(){
 			boolean testingBool = true;
 			for(dfaState state1 : dfaStates){
 				
-				//something is wrong here
 				Set<State> tempSet2 = new HashSet<State>();
 				tempSet2.addAll(state1.nfaStates);
 				if(tempSet2.equals(tempSet)){

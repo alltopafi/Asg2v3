@@ -30,16 +30,40 @@ public class nfa {
 
 		convertToDfa();
 		
+		do{
+			ArrayList<dfaState> tempList = new ArrayList<dfaState>();
+			tempList.addAll(dfaStates);
+			for(int i=0;i<tempList.size();i++){
+				if(!tempList.get(i).checked){
+//					System.out.println("----- state "+ tempList.get(i).name+"not checked");
+					createDfaStates(tempList.get(i));
+				}
+			}
+		}while(dfaStatesFinsished());
+		
+		
 		System.out.println();
 		for(dfaState state : dfaStates){
 			System.out.println(state.name+": ");
 			System.out.println("   states : "+state.nfaStates);
+			System.out.println("      checked " + state.checked);
 			System.out.println("      for a " + state.map.get('a'));
 			System.out.println("      for b " + state.map.get('b'));
 		}
 		
 	}
 
+public static boolean dfaStatesFinsished(){
+		for(dfaState state : dfaStates){
+			if(state.checked == false){
+//				System.out.println("this hits for state "+state.name);
+				createDfaStates(state);
+				return false;
+			}
+		}
+	return true;
+}
+	
 	/*
 	 * createNfa takes the file and updates 3 things 
 	 * 1. list of the nfa states with a string as the transitions(this means that they will have to be parsed as they are retrived
@@ -161,11 +185,11 @@ public class nfa {
 			tempSet.addAll(moveList);
 			tempSet.addAll(emptyList);
 			
-			System.out.println("state "+state.name+" with input "+inputs[k]);
+//			System.out.println("state "+state.name+" with input "+inputs[k]);
 //			System.out.println(tempSet);
 			ArrayList<State> arrayTemp = new ArrayList<State>();
 			arrayTemp.addAll(tempSet);
-			System.out.println(arrayTemp);
+//			System.out.println(arrayTemp);
 			state.map.put(inputs[k], arrayTemp);
 			dfaState tempState = null;
 			for(dfaState existingState : dfaStates){
@@ -177,12 +201,30 @@ public class nfa {
 					tempState.nfaStates.addAll(tempSet);
 				}
 			}
-			dfaStates.add(tempState);
+			state.checked = true;
+			//need to check before insert into dfaStates
+			boolean testingBool = true;
+			for(dfaState state1 : dfaStates){
+				
+				//something is wrong here
+				Set<State> tempSet2 = new HashSet<State>();
+				tempSet2.addAll(state1.nfaStates);
+				if(tempSet2.equals(tempSet)){
+					testingBool = false;
+				}
+				
+			}
+			
+			if(testingBool){
+				dfaStates.add(tempState);
+			}
 		}
 		
 	
 	
 	}
+	
+	
 	
 }
 class State{

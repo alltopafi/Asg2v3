@@ -29,7 +29,12 @@ public class nfa {
 		createNFA(fileScanner);
 
 		convertToDfa();
-		
+		System.out.println();
+		for(dfaState state : dfaStates){
+			System.out.print(state.name+": ");
+			System.out.println(state.map.get('b'));
+		}
+
 		
 	}
 
@@ -121,10 +126,10 @@ public class nfa {
 		dfaStartingState.nfaStates.addAll(State.emptyMoves(nfaStartingState));
 		dfaStates.add(dfaStartingState);
 		
-		for(int i =0;i<dfaStartingState.nfaStates.size();i++){
-			System.out.print(dfaStartingState.nfaStates.get(i).name);
-			if(i!=dfaStartingState.nfaStates.size()-1)System.out.print(",");
-		}
+//		for(int i =0;i<dfaStartingState.nfaStates.size();i++){
+//			System.out.print(dfaStartingState.nfaStates.get(i).name);
+//			if(i!=dfaStartingState.nfaStates.size()-1)System.out.print(",");
+//		}
 		
 		
 		
@@ -173,8 +178,6 @@ public class nfa {
 					tempSet.clear();
 				}
 				
-				dfaStartingState.checked = true;
-//				System.out.println(dfaStartingState.map.get('b'));
 				//get where the starting node goes with an input if it is not in the states add it 
 			
 					
@@ -186,7 +189,7 @@ public class nfa {
 								//add it to dfaStates if it is not in there
 								tempState = new dfaState(dfaStates.size());
 								tempState.nfaStates.addAll(s.map.get(inputs[i]));
-								System.out.print(" "+s.map.get(inputs[i])+" ");
+//								System.out.print(" "+s.map.get(inputs[i])+" ");
 								
 							}
 						}
@@ -195,24 +198,63 @@ public class nfa {
 						
 						
 					}
-					System.out.println("\nSize of dfaStates: "+dfaStates.size());
 					
+				dfaState temp=null;
 				for(dfaState state : dfaStates){
 					for(int i =0;i<inputs.length-1;i++){
 						if(state.map.get(inputs[i]) == null){
 							//need to update this
 							
 							
+							
+							/* the next 2 steps we will do for all new states added to the list
+							 * 1. apply move with character for each state included..this will return a set 
+							 * 2. apply lambda transitions to these states possibly resulting in a new set 
+							 * this final set of states will be a dfa state.
+							 * we repeat this any time a new state is made 
+							 */
+							
+							
+							ArrayList<State> moves = null;
+							ArrayList<State> emptyMove = null;
+							for(int j=0;j<state.nfaStates.size();j++){
+								moves = State.moveWithInput(state.nfaStates.get(j), inputs[i]);
+							}
+							
+							//apply lambda transitions to moves 
+							emptyMove = new ArrayList<State>();
+							for(int k=0;k<moves.size();k++){
+								emptyMove.addAll(State.emptyMoves(moves.get(k)));
+							}	
+							
+							tempSet.addAll(moves);
+							tempSet.addAll(emptyMove);
+							moves.clear();
+							emptyMove.clear();
+							
+							
+							ArrayList<State> tempPut = new ArrayList<State>();
+							tempPut.addAll(tempSet);
+							
+							temp = new dfaState(dfaStates.size());
+							
+							temp.map.put(inputs[i], tempPut);
+							
+							
+							
 						}
 						
 						
-					}
-					
+	
+					}			
 					
 				}
+				dfaStates.add(temp);
+				tempSet.clear();
 				
+//				System.out.println("\nSize of dfaStates: "+dfaStates.size());
 				
-		}	
+		}//end of convert dfa method	
 	}
 	
 	

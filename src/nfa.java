@@ -16,6 +16,7 @@ public class nfa {
 	static Set<dfaState> dfaStates = new HashSet<dfaState>();
 	static dfaState dfaStartingState = null;
 	static ArrayList<dfaState> sortedStates;
+	static ArrayList<dfaState> dfaAcceptingStates;
 	
 	public static void main(String[] args) {
 
@@ -71,20 +72,39 @@ public class nfa {
 		
 		System.out.println("\n------------------");
 		
+		System.out.println("s:  "+dfaStartingState.name);
+		dfaAcceptingStates = findDfaAcceptingStates();
+		System.out.print("A:  ");
 		
+		for(int i=0;i<dfaAcceptingStates.size();i++){
+			if(i==0)System.out.print("{");
+			System.out.print(dfaAcceptingStates.get(i).name);
+			if(i==dfaAcceptingStates.size()-1){
+				System.out.println("}");
+			}else{
+				System.out.print(",");
+			}
+		}
 		
-		
-//		System.out.println();
-//		for(dfaState state : dfaStates){
-//			System.out.println(state.name+": ");
-//			System.out.println("   states : "+state.nfaStates);
-//			System.out.println("      checked " + state.checked);
-//			System.out.println("      for a " + state.map.get('a'));
-//			System.out.println("      for b " + state.map.get('b'));
-//		}
+		System.out.println("The following strings are accepted:");
+
 		
 	}
 
+public static ArrayList<dfaState> findDfaAcceptingStates(){
+	ArrayList<dfaState> acceptingStates = new ArrayList<dfaState>();
+	for(dfaState state : dfaStates){
+		for(int i=0;i<state.nfaStates.size();i++){
+			for(int k=0;k<nfaAcceptingStates.size();k++){
+				if(state.nfaStates.get(i) == nfaAcceptingStates.get(k)){
+					acceptingStates.add(state);
+				}
+			}
+		}
+	}
+	return acceptingStates;
+}
+	
 public static int getStateName(ArrayList<State> list){
 	for(dfaState state : sortedStates){
 		if(state.nfaStates.equals(list)){

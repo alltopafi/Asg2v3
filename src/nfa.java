@@ -41,18 +41,54 @@ public class nfa {
 			}
 		}while(dfaStatesFinsished());
 		
+		//sort dfa states based on name
 		
-		System.out.println();
-		for(dfaState state : dfaStates){
-			System.out.println(state.name+": ");
-			System.out.println("   states : "+state.nfaStates);
-			System.out.println("      checked " + state.checked);
-			System.out.println("      for a " + state.map.get('a'));
-			System.out.println("      for b " + state.map.get('b'));
+		ArrayList<dfaState> sortedStates = sortDfaStates();
+		
+		
+		for (dfaState state : sortedStates){
+			System.out.print(state.nfaStates+" ");
 		}
+				
+		System.out.print("\n Sigma:     ");
+		for(int i=0;i<inputs.length-1;i++){
+			System.out.print(inputs[i]+"     ");
+		}
+		
+		System.out.println("\n------------------");
+		
+		
+		
+		
+		
+		
+		
+		
+//		System.out.println();
+//		for(dfaState state : dfaStates){
+//			System.out.println(state.name+": ");
+//			System.out.println("   states : "+state.nfaStates);
+//			System.out.println("      checked " + state.checked);
+//			System.out.println("      for a " + state.map.get('a'));
+//			System.out.println("      for b " + state.map.get('b'));
+//		}
 		
 	}
 
+public static ArrayList<dfaState> sortDfaStates(){
+	ArrayList<dfaState> sortedStates = new ArrayList<dfaState>();
+	
+	while(sortedStates.size()<dfaStates.size()){
+		for(dfaState state : dfaStates){
+			if(state.name == sortedStates.size()){
+				sortedStates.add(state);
+			}
+		}
+	}
+	
+	return sortedStates;	
+}
+	
 public static boolean dfaStatesFinsished(){
 		for(dfaState state : dfaStates){
 			if(state.checked == false){
@@ -153,7 +189,6 @@ public static boolean dfaStatesFinsished(){
 //		System.out.println("empty: "+State.emptyMoves(nfaStartingState));
 		dfaStates.add(dfaStartingState);
 
-		System.out.println();
 		createDfaStates(dfaStartingState);
 		
 		

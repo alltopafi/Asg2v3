@@ -109,20 +109,35 @@ public class nfa {
 	}
 	
 public static void testStringsFile(Scanner fileScanner){
-	
 	while(fileScanner.hasNextLine()){
 //		System.out.println(fileScanner.nextLine());
 		String tempString = fileScanner.nextLine();
 		char [] tempChars = tempString.toCharArray();
+//		System.out.println(tempChars);
+		dfaState curState = dfaStartingState;
+		for(int i=0;i<tempChars.length;i++){
+			//need to check of current char is in inputs if not fail
+			ArrayList<State> moveToStateList = curState.map.get(tempChars[i]);
+			if(moveToStateList == null)break;
+			int name = getStateName(moveToStateList);
+			//name has the name of the dfaState we need to change curState to
+			curState = returnStateFromName(name);
+			
+			
+		}
 		
-		
-		
+		if(dfaAcceptingStates.contains(curState)){
+			System.out.println(tempChars);
+		}		
+	}
+}
+
+public static dfaState returnStateFromName(int name){
+	for(dfaState state : dfaStates){
+		if(state.name == name) return state;
 	}
 	
-	
-	
-	
-	
+	return null;
 }
 
 public static ArrayList<dfaState> findDfaAcceptingStates(){

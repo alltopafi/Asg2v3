@@ -88,8 +88,42 @@ public class nfa {
 		
 		System.out.println("The following strings are accepted:");
 
+		if(args.length == 2){
+			Scanner fileScanner2 = null;
+			try {
+				fileScanner2 = new Scanner(new File(args[1]));
+			} catch (Exception e) {
+				System.out.println(args[1] + " is not a valid file.");
+				System.exit(-1);
+			}
+			
+			testStringsFile(fileScanner2);
+				
+		
+		}
+		
+		
+		
+		
 		
 	}
+	
+public static void testStringsFile(Scanner fileScanner){
+	
+	while(fileScanner.hasNextLine()){
+//		System.out.println(fileScanner.nextLine());
+		String tempString = fileScanner.nextLine();
+		char [] tempChars = tempString.toCharArray();
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+}
 
 public static ArrayList<dfaState> findDfaAcceptingStates(){
 	ArrayList<dfaState> acceptingStates = new ArrayList<dfaState>();

@@ -15,6 +15,7 @@ public class nfa {
 	
 	static Set<dfaState> dfaStates = new HashSet<dfaState>();
 	static dfaState dfaStartingState = null;
+	static ArrayList<dfaState> sortedStates;
 	
 	public static void main(String[] args) {
 
@@ -43,7 +44,7 @@ public class nfa {
 		
 		//sort dfa states based on name
 		
-		ArrayList<dfaState> sortedStates = sortDfaStates();
+		sortedStates = sortDfaStates();
 		
 		
 		for (dfaState state : sortedStates){
@@ -52,14 +53,23 @@ public class nfa {
 				
 		System.out.print("\n Sigma:     ");
 		for(int i=0;i<inputs.length-1;i++){
-			System.out.print(inputs[i]+"     ");
+			System.out.print(inputs[i]+"    ");
+		}
+		
+		System.out.print("\n------------------");
+		
+		for (dfaState state : sortedStates){
+			System.out.print("\n     "+state.name+":    ");
+			for(int i=0;i<inputs.length-1;i++){
+				System.out.print(getStateName(state.map.get(inputs[i]))+"    ");
+			}
+			
+			
+			
+			
 		}
 		
 		System.out.println("\n------------------");
-		
-		
-		
-		
 		
 		
 		
@@ -75,6 +85,18 @@ public class nfa {
 		
 	}
 
+public static int getStateName(ArrayList<State> list){
+	for(dfaState state : sortedStates){
+		if(state.nfaStates.equals(list)){
+			return state.name;
+		}
+	}
+	
+	
+	return -1;
+}
+	
+	
 public static ArrayList<dfaState> sortDfaStates(){
 	ArrayList<dfaState> sortedStates = new ArrayList<dfaState>();
 	

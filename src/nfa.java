@@ -36,6 +36,11 @@ public class nfa {
 			ArrayList<dfaState> tempList = new ArrayList<dfaState>();
 			tempList.addAll(dfaStates);
 			for(int i=0;i<tempList.size();i++){
+				
+				
+				System.out.println("\n\n\n\nState: "+tempList.get(i).name+" is Checked: "+tempList.get(i).checked);
+				
+				
 				if(!tempList.get(i).checked){
 //					System.out.println("----- state "+ tempList.get(i).name+"not checked");
 					createDfaStates(tempList.get(i));
@@ -47,10 +52,22 @@ public class nfa {
 		
 		sortedStates = sortDfaStates();
 		
-		
-		for (dfaState state : sortedStates){
-			System.out.print(state.nfaStates+" ");
+		ArrayList<dfaState> tempDfaStates = new ArrayList<dfaState>();
+		tempDfaStates.addAll(sortedStates);
+		for(int i =0;i<tempDfaStates.size();i++){
+			ArrayList<State> tempNfaStates = tempDfaStates.get(i).nfaStates;
+			for(int k=0;k<tempNfaStates.size();k++){
+				if(k==0)System.out.print("{");
+				System.out.print(tempNfaStates.get(k).name);
+				if(k==tempNfaStates.size()-1){
+					System.out.print("} ");
+				}else{
+					System.out.print(",");
+				}
+			}
+			
 		}
+
 				
 		System.out.print("\n Sigma:     ");
 		for(int i=0;i<inputs.length-1;i++){
@@ -70,6 +87,10 @@ public class nfa {
 			
 		}
 		
+		
+//		------------- Printing starting and accepting dfa States
+		
+		
 		System.out.println("\n------------------");
 		
 		System.out.println("s:  "+dfaStartingState.name);
@@ -86,6 +107,11 @@ public class nfa {
 			}
 		}
 		
+		
+		
+		
+		
+//		--------------------- Checking Strings-----------------------
 		System.out.println("The following strings are accepted:");
 
 		if(args.length == 2){
@@ -109,7 +135,7 @@ public class nfa {
 	}
 	
 public static void testStringsFile(Scanner fileScanner){
-	while(fileScanner.hasNextLine()){
+	whileLoop : while(fileScanner.hasNextLine()){
 //		System.out.println(fileScanner.nextLine());
 		String tempString = fileScanner.nextLine();
 		char [] tempChars = tempString.toCharArray();
@@ -117,19 +143,52 @@ public static void testStringsFile(Scanner fileScanner){
 		dfaState curState = dfaStartingState;
 		for(int i=0;i<tempChars.length;i++){
 			//need to check of current char is in inputs if not fail
-			ArrayList<State> moveToStateList = curState.map.get(tempChars[i]);
-			if(moveToStateList == null)break;
-			int name = getStateName(moveToStateList);
-			//name has the name of the dfaState we need to change curState to
-			curState = returnStateFromName(name);
+
+//			System.out.println("\n\n\ntemp char: "+tempChars[i]);
+//			System.out.println("input is a valid input: "+charInInputs(tempChars[i]));
+			if(charInInputs(tempChars[i])){
 			
+				ArrayList<State> moveToStateList = curState.map.get(tempChars[i]);
+//				System.out.println("\n\n\nCurrent State: "+curState.name);
+//				if(moveToStateList == null){
+//					continue whileLoop;
+//				}
+				int name = getStateName(moveToStateList);
+				//name has the name of the dfaState we need to change curState to
+				curState = returnStateFromName(name);
+				}//end of tempChars loop
+				else{
+					continue whileLoop;
+				}
 			
+			}//end of if tempChar character is a valid input	
+				if(isDfaFinalState(curState)){
+					System.out.println(tempChars);
+				}
+			
+	
+	}//end of while
+}
+
+
+public static boolean isDfaFinalState(dfaState state){
+	for(dfaState dfaState : dfaAcceptingStates){
+		if(dfaState == state){
+			return true;
 		}
-		
-		if(dfaAcceptingStates.contains(curState)){
-			System.out.println(tempChars);
-		}		
 	}
+	
+	return false;
+}
+
+
+public static boolean charInInputs(char c){
+	for(int i=0;i<inputs.length;i++){
+		if(inputs[i] == c){
+			return true;
+		}
+	}
+	return false;
 }
 
 public static dfaState returnStateFromName(int name){
@@ -184,11 +243,11 @@ public static boolean dfaStatesFinsished(){
 		for(dfaState state : dfaStates){
 			if(state.checked == false){
 //				System.out.println("this hits for state "+state.name);
-				createDfaStates(state);
-				return false;
+//				createDfaStates(state);
+				return true;
 			}
 		}
-	return true;
+	return false;
 }
 	
 	/*

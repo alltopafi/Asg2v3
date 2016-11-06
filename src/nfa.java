@@ -38,7 +38,7 @@ public class nfa {
 			for(int i=0;i<tempList.size();i++){
 				
 				
-				System.out.println("\n\n\n\nState: "+tempList.get(i).name+" is Checked: "+tempList.get(i).checked);
+//				System.out.println("\n\n\n\nState: "+tempList.get(i).name+" is Checked: "+tempList.get(i).checked);
 				
 				
 				if(!tempList.get(i).checked){
